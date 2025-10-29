@@ -12,7 +12,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
-from utils import load_trained_model, preprocess_image, CLASS_NAMES, get_class_display_name, configure_gpu
+from utils import load_trained_model, preprocess_image, CLASS_NAMES, get_class_display_name
 
 
 def predict_single_image(model, image_path):
@@ -30,7 +30,7 @@ def predict_single_image(model, image_path):
     """
     
     if not os.path.exists(image_path):
-        print(f"❌ Error: Image file not found: {image_path}")
+        print(f"Error: Image file not found: {image_path}")
         return None, None, None
     
     # Preprocess image
@@ -70,7 +70,7 @@ def visualize_prediction(image_path, predicted_class, confidence, all_probabilit
     # Display image
     img = Image.open(image_path)
     ax1.imshow(img)
-    ax1.set_title(f"Input Image", fontsize=14, fontweight='bold')
+    ax1.set_title("Input Image", fontsize=14, fontweight='bold')
     ax1.axis('off')
     
     # Display prediction
@@ -98,7 +98,7 @@ def visualize_prediction(image_path, predicted_class, confidence, all_probabilit
     
     plt.tight_layout()
     plt.savefig('test_prediction.png', dpi=150, bbox_inches='tight')
-    print("✅ Visualization saved to: test_prediction.png")
+    print("Visualization saved to: test_prediction.png")
     plt.show()
 
 
@@ -116,14 +116,12 @@ def main():
     
     # Check model file
     if not os.path.exists(args.model):
-        print(f"❌ Model file not found: {args.model}")
+        print(f"Model file not found: {args.model}")
         print("Please train the model first using: python train_model.py")
         sys.exit(1)
     
     # Load model
     print(f"Loading model from: {args.model}")
-    # Configure GPU for inference (silent)
-    configure_gpu(announce=False, context_label="Inference")
     model = load_trained_model(args.model)
     
     # Make prediction
@@ -151,4 +149,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
