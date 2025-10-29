@@ -1,30 +1,28 @@
-# AI-Powered Waste Segregation System - Dependencies
-# Python 3.8+
+# === Core ML Framework (Python 3.12 compatible) ===
+# TensorFlow stable doesn't yet support Py 3.12 → use tf-nightly
+tf-nightly>=2.18.0.dev20241001
 
-# Deep Learning
-tensorflow>=2.18.0
-keras>=2.13.0
+# === Image Processing ===
+opencv-python>=4.9.0
+Pillow>=10.2.0
 
-# Image Processing
-opencv-python>=4.8.0
-Pillow>=10.0.0
+# === Data Science & Visualization ===
+numpy>=1.26.0
+pandas>=2.2.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+scikit-learn>=1.5.0
 
-# Data Science & Visualization
-numpy>=1.24.0
-pandas>=2.0.0
-matplotlib>=3.7.0
-seaborn>=0.12.0
-scikit-learn>=1.3.0
+# === Web Frameworks ===
+streamlit>=1.31.0
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0  # includes httptools, uvloop, etc.
 
-# Web Framework
-streamlit>=1.28.0
-fastapi>=0.100.0
-uvicorn>=0.23.0
+# === Utilities ===
+python-dateutil>=2.9.0.post0
+tqdm>=4.66.0
+requests>=2.32.0
 
-# Utilities
-python-dateutil>=2.8.0
-tqdm>=4.65.0
-
-# Optional: for dataset download
-requests>=2.31.0
-
+# (Optional but recommended)
+# rich>=13.7.0     # pretty CLI output
+# pyyaml>=6.0.2    # for YAML config files

@@ -58,7 +58,6 @@ st.markdown("""
 
 def load_model():
     """Load the trained model with caching."""
-    
     model_path = 'models/waste_classifier_best.h5'
     
     if not os.path.exists(model_path):
@@ -71,34 +70,16 @@ def load_model():
 def predict_image(model, image):
     """
     Predict waste category for an image.
-    
-    Args:
-        model: Trained Keras model
-        image: PIL Image or numpy array
-    
-    Returns:
-        predicted_class: Predicted waste category
-        confidence: Confidence score
-        all_predictions: All class probabilities
     """
-    
-    # Convert PIL to numpy array if needed
     if isinstance(image, Image.Image):
         image = np.array(image)
     
-    # Resize to model input size
     image_resized = cv2.resize(image, (224, 224))
-    
-    # Normalize
     image_normalized = image_resized.astype(np.float32) / 255.0
-    
-    # Expand dimensions
     image_batch = np.expand_dims(image_normalized, axis=0)
     
-    # Make prediction
     predictions = model.predict(image_batch, verbose=0)
     
-    # Get top prediction
     predicted_idx = np.argmax(predictions[0])
     predicted_class = CLASS_NAMES[predicted_idx]
     confidence = predictions[0][predicted_idx]
@@ -107,12 +88,9 @@ def predict_image(model, image):
 
 def main():
     """Main Streamlit application."""
-    
-    # Header
     st.markdown('<div class="main-header">♻️ AI Waste Segregation System</div>', unsafe_allow_html=True)
     st.markdown("### Computer Vision-Powered Recyclable Material Detection")
     
-    # Load model
     with st.spinner("Loading AI model..."):
         model = load_model()
     
@@ -127,7 +105,6 @@ def main():
             ["📁 Upload Image", "📷 Webcam Capture", "🎲 Sample Predictions"]
         )
     
-    # Main content area
     if upload_option == "📁 Upload Image":
         st.subheader("Upload a waste item image")
         
@@ -138,7 +115,6 @@ def main():
         )
         
         if uploaded_file is not None:
-            # Display uploaded image
             image = Image.open(uploaded_file)
             
             col1, col2 = st.columns([1, 1])
@@ -147,11 +123,9 @@ def main():
                 st.image(image, caption="Uploaded Image", use_container_width=True)
             
             with col2:
-                # Make prediction
                 with st.spinner("Analyzing image..."):
                     predicted_class, confidence, all_predictions = predict_image(model, image)
                 
-                # Display result
                 display_name = get_class_display_name(predicted_class)
                 confidence_pct = confidence * 100
                 
@@ -164,23 +138,18 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Progress bar for confidence
-                st.progress(confidence)
+                st.progress(float(confidence))
                 
-                # Show all predictions
-                st.markdown("### 📊 All Class Probabilities")
+                st.markdown("### All Class Probabilities")
                 for idx, class_name in enumerate(CLASS_NAMES):
                     prob = all_predictions[idx] * 100
                     st.write(f"**{get_class_display_name(class_name)}:** {prob:.1f}%")
     
     elif upload_option == "📷 Webcam Capture":
         st.subheader("Capture image from webcam")
-        
-        # Get webcam input using streamlit-camera-input-live (or file_uploader workaround)
         picture = st.camera_input("Take a picture", key="webcam_input")
         
         if picture is not None:
-            # Process captured image
             image = Image.open(picture)
             
             col1, col2 = st.columns([1, 1])
@@ -189,11 +158,9 @@ def main():
                 st.image(image, caption="Captured Image", use_container_width=True)
             
             with col2:
-                # Make prediction
                 with st.spinner("Analyzing image..."):
                     predicted_class, confidence, all_predictions = predict_image(model, image)
                 
-                # Display result
                 display_name = get_class_display_name(predicted_class)
                 confidence_pct = confidence * 100
                 
@@ -206,9 +173,9 @@ def main():
                 </div>
                 """, unsafe_allow_html=True)
                 
-                st.progress(confidence)
+                # ✅ Fixed progress bar
+                st.progress(float(confidence))
                 
-                # Show all predictions
                 st.markdown("### 📊 All Class Probabilities")
                 for idx, class_name in enumerate(CLASS_NAMES):
                     prob = all_predictions[idx] * 100
@@ -216,10 +183,8 @@ def main():
     
     elif upload_option == "🎲 Sample Predictions":
         st.subheader("Sample predictions from test set")
-        
         st.info("📌 Note: Place sample test images in a 'samples' directory for demonstration.")
         
-        # Sample test images directory
         samples_dir = 'samples'
         
         if os.path.exists(samples_dir):
@@ -246,7 +211,6 @@ def main():
                             st.success(f"**Prediction:** {display_name}")
                             st.info(f"**Confidence:** {confidence*100:.1f}%")
                             
-                            # Bar chart of all predictions
                             st.bar_chart(
                                 {get_class_display_name(name): prob*100 
                                  for name, prob in zip(CLASS_NAMES, all_predictions)}
@@ -267,4 +231,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

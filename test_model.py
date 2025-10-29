@@ -12,7 +12,7 @@ import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
 
-from utils import load_trained_model, preprocess_image, CLASS_NAMES, get_class_display_name
+from utils import load_trained_model, preprocess_image, CLASS_NAMES, get_class_display_name, configure_gpu
 
 
 def predict_single_image(model, image_path):
@@ -122,6 +122,8 @@ def main():
     
     # Load model
     print(f"Loading model from: {args.model}")
+    # Configure GPU for inference (silent)
+    configure_gpu(announce=False, context_label="Inference")
     model = load_trained_model(args.model)
     
     # Make prediction

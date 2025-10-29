@@ -12,6 +12,53 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator, load_img, i
 from tensorflow.keras.utils import to_categorical
 from sklearn.preprocessing import LabelEncoder
 
+# ----------------------- GPU configuration helper -----------------------
+def configure_gpu(announce=True, context_label="Training"):
+    """
+    Configure TensorFlow to use GPU if available, enabling memory growth.
+
+    Args:
+        announce: Whether to print status messages
+        context_label: Context string for messages, e.g., "Training" or "Inference"
+
+    Returns:
+        (gpu_available: bool, gpu_name: str | None)
+    """
+
+    gpu_name = None
+    try:
+        physical_gpus = tf.config.list_physical_devices('GPU')
+        if physical_gpus:
+            # Enable memory growth to avoid pre-allocating all GPU memory
+            for gpu in physical_gpus:
+                try:
+                    tf.config.experimental.set_memory_growth(gpu, True)
+                except Exception:
+                    # Continue even if memory growth setting fails for a device
+                    pass
+
+            # Get a friendly GPU name if possible
+            logical_gpus = tf.config.list_logical_devices('GPU')
+            if logical_gpus:
+                try:
+                    details = tf.config.experimental.get_device_details(logical_gpus[0])
+                    gpu_name = details.get('device_name') or logical_gpus[0].name
+                except Exception:
+                    gpu_name = logical_gpus[0].name
+
+            if announce:
+                print(f"✅ {context_label} on GPU: {gpu_name}")
+            return True, gpu_name
+        else:
+            if announce:
+                print("⚠️ Training on CPU (no GPU detected)")
+            return False, None
+    except Exception:
+        if announce:
+            print("⚠️ Training on CPU (no GPU detected)")
+        return False, None
+# -----------------------------------------------------------------------
+
 # Image settings
 IMG_SIZE = 224
 IMG_SHAPE = (IMG_SIZE, IMG_SIZE, 3)
